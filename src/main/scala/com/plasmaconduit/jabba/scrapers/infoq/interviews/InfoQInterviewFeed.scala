@@ -10,7 +10,7 @@ object InfoQInterviewFeed {
     "InfoQ_Interview_Feed",
     PendingScraper(initialUrls = Vector("http://www.infoq.com/interviews/")),
     RunningScraper(
-      sleep  = 30.seconds,
+      sleep  = 120.seconds,
       scrape = scrape
     ),
     CompletedScraper()

@@ -10,7 +10,7 @@ object PaulGrahamNode {
     "PaulGraham_Node",
     PendingScraper(),
     RunningScraper(
-      sleep  = 15.seconds,
+      sleep  = 30.seconds,
       scrape = scrape
     ),
     CompletedScraper()
