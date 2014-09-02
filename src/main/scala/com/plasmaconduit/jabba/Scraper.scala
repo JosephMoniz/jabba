@@ -17,12 +17,9 @@ case class PendingScraper(initialUrls: Vector[String] = Vector(),
 }
 
 case class RunningScraper(sleep: Duration,
-                          scrape: (ScraperStateMachine, String, DomRoot) => ScraperResult,
-                          lastRun: Long = 0) extends Scraper
+                          scrape: (ScraperStateMachine, String, DomRoot) => ScraperResult) extends Scraper
 {
   val state: ScraperActivityState = Running
-  def isReady: Boolean = new Date().getTime >= (lastRun + sleep.toMillis)
-  def updateLastRan(): RunningScraper = copy(lastRun = new Date().getTime)
 }
 
 case class CompletedScraper() extends Scraper {
@@ -38,19 +35,26 @@ class ScraperStateMachine(val name: String,
                           val pending: PendingScraper,
                           val running: RunningScraper,
                           val completed: CompletedScraper,
+                          val lastRun: Long,
                           val current: Scraper)
 {
 
   def toState(state: ScraperActivityState): ScraperStateMachine = {
-    new ScraperStateMachine(name, pending, running, completed, state match {
+    new ScraperStateMachine(name, pending, running, completed, lastRun, state match {
       case Pending   => pending
       case Running   => running
       case Completed => completed
     })
   }
 
+  def isReady: Boolean = current match {
+    case PendingScraper(_, _) => true
+    case RunningScraper(s, _) => new Date().getTime >= (lastRun + s.toMillis)
+    case CompletedScraper()   => false
+  }
+
   def updateLastRan(): ScraperStateMachine = current.state match {
-    case Running => new ScraperStateMachine(name, pending, running, completed, running.updateLastRan())
+    case Running => new ScraperStateMachine(name, pending, running, completed, new Date().getTime, running)
     case _       => this
   }
 
@@ -59,7 +63,7 @@ class ScraperStateMachine(val name: String,
 object ScraperStateMachine {
 
   def apply(n: String, p: PendingScraper, r: RunningScraper, c: CompletedScraper) = {
-    new ScraperStateMachine(n, p, r, c, p)
+    new ScraperStateMachine(n, p, r, c, new Date().getTime, p)
   }
 
   def unapply(m: ScraperStateMachine) = Some((m.name, m.pending, m.running, m.completed, m.current))
@@ -168,11 +172,7 @@ case class Scrapers(scrapers: Map[String, ScraperState] = HashMap()) {
   }
 
   def readyScrapers: Observable[ScraperState] = {
-    Observable.from(scrapers.values.filter(m => m.stateMachine.current match {
-      case PendingScraper(_, _)        => true
-      case s @ RunningScraper(_, _, _) => s.isReady
-      case CompletedScraper()          => false
-    }))
+    Observable.from(scrapers.values.filter(m => m.stateMachine.isReady))
   }
 
   def initialUrls: Observable[ScraperTarget] = {
