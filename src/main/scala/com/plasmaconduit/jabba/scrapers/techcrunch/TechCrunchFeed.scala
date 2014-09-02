@@ -11,7 +11,7 @@ case object TechCrunchFeed {
     "TechCrunch_Feed",
     PendingScraper(initialUrls = Vector("http://www.techcrunch.com/")),
     RunningScraper(
-      sleep  = 130.seconds,
+      sleep  = 120.seconds,
       scrape = scrape
     ),
     CompletedScraper()

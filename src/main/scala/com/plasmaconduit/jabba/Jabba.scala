@@ -2,12 +2,7 @@ package com.plasmaconduit.jabba
 
 import rx.lang.scala._
 import scala.collection.immutable._
-
-/*
-TODO: scraper sleep time doesn't seem to be having any effect. The reason is probably because
-      i'm either forgetting to change the scrapers state to Running or that it's not updating
-      the last ran time for some reason.
- */
+import scala.concurrent.duration._
 
 case class Jabba(transactor: Transactor,
                  initialLedger: Ledger,
@@ -31,6 +26,7 @@ case class Jabba(transactor: Transactor,
       ).toBlocking.head
       state  = update.scrapers
       ledger = update.ledger
+      Thread.sleep(1.seconds.toMillis)
     }
   }
 
@@ -60,8 +56,8 @@ case class Jabba(transactor: Transactor,
         state.transitionScraperState(change)
       case ScraperResultEntry(_, scraped, next, data, targets) =>
         state
-          .markTargetAsScraped(scraped)
           .transitionScraperState(next)
+          .markTargetAsScraped(scraped)
           .addMultipleTargetsToQueue(targets)
     }}
   }

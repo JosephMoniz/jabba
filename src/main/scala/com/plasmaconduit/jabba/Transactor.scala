@@ -9,12 +9,14 @@ case class Transactor(factory: BrowserFactory) {
   }
 
   def transactScraper(scraper: ScraperState): Observable[ScraperResult] = {
+    val running = scraper.stateMachine.running
+    val state   = scraper.stateMachine.toState(Running)
     for (
       url     <- scraper.nextUrlFromQueue;
       _       <- printScraperState(url, scraper.stateMachine);
       browser <- factory.open;
       page    <- browser.visit(url);
-      result  <- Observable.just(scraper.stateMachine.running.scrape(scraper.stateMachine, url, page.document));
+      result  <- Observable.just(running.scrape(state, url, page.document));
       _       <- page.close;
       _       <- printScraperResults(scraper.stateMachine, result)
     ) yield result
