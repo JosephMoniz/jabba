@@ -6,6 +6,8 @@ import scala.concurrent.duration._
 
 object PaulGrahamNode {
 
+  val dateRegex = "([a-zA-Z]+ [0-9]{4})".r
+
   val machine = ScraperStateMachine(
     "PaulGraham_Node",
     PendingScraper(),
@@ -27,10 +29,12 @@ object PaulGrahamNode {
     date  <- page.querySelector("td[width='455'] font[face='verdana']").map(_.getText).map(cleanUpDate)
   ) yield Map(
     "title"          -> title,
-    "date"           -> date,
+    "publish_date"   -> date.getOrElse(""),
     "twitter_author" -> "https://twitter.com/paulg"
   )
 
-  def cleanUpDate(string: String): String = string
+  def cleanUpDate(string: String): Option[String] = {
+    dateRegex findFirstIn string map { case dateRegex(date) => date }
+  }
 
 }
