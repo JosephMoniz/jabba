@@ -22,7 +22,7 @@ case class Transactor(factory: BrowserFactory) {
     ) yield result
   }
 
-  def printScraperState(url: String, stateMachine: ScraperStateMachine): Observable[Unit] = {
+  def printScraperState(url: Url, stateMachine: ScraperStateMachine): Observable[Unit] = {
     Observable.create({observer =>
       println(s"Running ${stateMachine.name}:")
       println(s"  + previous state: ${stateMachine.current.state}")

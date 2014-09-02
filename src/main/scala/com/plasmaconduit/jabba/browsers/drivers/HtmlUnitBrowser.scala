@@ -15,10 +15,10 @@ case class HtmlUnitBrowser(driver: Option[WebDriver] = None) extends BrowserDriv
     Observable.just(OpenBrowser(HtmlUnitBrowser(Some(new HtmlUnitDriver()))))
   }
 
-  def visit(url: String): Observable[BrowsingBrowser] = driver match {
+  def visit(url: Url): Observable[BrowsingBrowser] = driver match {
     case None    => Observable.error(new Exception("Invalid browser state"))
     case Some(n) => Observable.create({(observer) =>
-      n.get(url)
+      n.get(url.toString)
       observer.onNext(BrowsingBrowser(this))
       observer.onCompleted()
       Subscription()

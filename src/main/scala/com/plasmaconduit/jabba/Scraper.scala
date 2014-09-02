@@ -10,14 +10,14 @@ sealed trait Scraper {
   val state: ScraperActivityState
 }
 
-case class PendingScraper(initialUrls: Vector[String] = Vector(),
+case class PendingScraper(initialUrls: Vector[Url] = Vector(),
                           dependencies: Vector[Scraper] = Vector()) extends Scraper
 {
   val state: ScraperActivityState = Pending
 }
 
 case class RunningScraper(sleep: Duration,
-                          scrape: (ScraperStateMachine, String, DomRoot) => ScraperResult) extends Scraper
+                          scrape: (ScraperStateMachine, Url, DomRoot) => ScraperResult) extends Scraper
 {
   val state: ScraperActivityState = Running
 }
@@ -70,7 +70,7 @@ object ScraperStateMachine {
 
 }
 
-case class ScraperTarget(scraper: ScraperStateMachine, url: String) {
+case class ScraperTarget(scraper: ScraperStateMachine, url: Url) {
 
   def toLedgerAdditionEntry: ScraperTargetAdditionEntry = {
     ScraperTargetAdditionEntry(new Date().getTime, ScraperTargetAttribute(scraper.name, url))
@@ -78,7 +78,7 @@ case class ScraperTarget(scraper: ScraperStateMachine, url: String) {
 
 }
 
-case class ScraperResult(url: String,
+case class ScraperResult(url: Url,
                          data: Option[Map[String, String]],
                          targets: Vector[ScraperTarget],
                          scraper: ScraperStateMachine)
@@ -95,28 +95,28 @@ case class ScraperResult(url: String,
 }
 
 case class ScraperState(stateMachine: ScraperStateMachine,
-                        queue: Vector[String] = Vector(),
-                        done:  Vector[String] = Vector())
+                        queue: Vector[Url] = Vector(),
+                        done:  Vector[Url] = Vector())
 {
 
-  def addUrlToQueue(url: String): ScraperState = {
+  def addUrlToQueue(url: Url): ScraperState = {
     copy(queue = queue :+ url)
   }
 
-  def removeUrlFromQueue(url: String): ScraperState = {
+  def removeUrlFromQueue(url: Url): ScraperState = {
     copy(queue = queue.filter(_ != url))
   }
 
-  def nextUrlFromQueue: Observable[String] = queue.headOption match {
+  def nextUrlFromQueue: Observable[Url] = queue.headOption match {
     case None    => Observable.empty
     case Some(n) => Observable.just(n)
   }
 
-  def addUrlToDone(url: String): ScraperState = {
+  def addUrlToDone(url: Url): ScraperState = {
     copy(done = done :+ url)
   }
 
-  def markUrlAsScraped(url: String): ScraperState = {
+  def markUrlAsScraped(url: Url): ScraperState = {
     copy(stateMachine = stateMachine.updateLastRan())
       .removeUrlFromQueue(url)
       .addUrlToDone(url)
