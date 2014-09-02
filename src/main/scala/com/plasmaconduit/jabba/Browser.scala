@@ -13,13 +13,13 @@ case class BrowserFactory(driver: BrowserDriver) {
 
 case class OpenBrowser(driver: BrowserDriver) {
 
-  def visit(url: String): Observable[BrowsingBrowser] = driver.visit(url)
+  def visit(url: Url): Observable[BrowsingBrowser] = driver.visit(url)
 
 }
 
 case class BrowsingBrowser(driver: BrowserDriver) {
 
-  def visit(url: String): Observable[BrowsingBrowser] = driver.visit(url)
+  def visit(url: Url): Observable[BrowsingBrowser] = driver.visit(url)
 
   def close: Observable[Unit] = driver.close
 
@@ -31,7 +31,7 @@ trait BrowserDriver {
 
   def open: Observable[OpenBrowser]
 
-  def visit(url: String): Observable[BrowsingBrowser]
+  def visit(url: Url): Observable[BrowsingBrowser]
 
   def document: DomRoot
 

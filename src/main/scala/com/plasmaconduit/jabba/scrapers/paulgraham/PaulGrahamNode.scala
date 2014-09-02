@@ -17,7 +17,7 @@ object PaulGrahamNode {
   )
   def apply(): ScraperStateMachine = machine
 
-  def scrape(machine: ScraperStateMachine, url: String, page: DomRoot): ScraperResult = {
+  def scrape(machine: ScraperStateMachine, url: Url, page: DomRoot): ScraperResult = {
     val data = scrapeDataFromArticle(page)
     ScraperResult(url, data, Vector(), machine)
   }

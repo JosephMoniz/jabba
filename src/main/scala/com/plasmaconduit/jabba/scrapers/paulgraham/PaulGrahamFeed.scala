@@ -8,7 +8,9 @@ object PaulGrahamFeed {
 
   val machine = ScraperStateMachine(
     "PaulGraham_Feed",
-    PendingScraper(initialUrls = Vector("http://www.paulgraham.com/articles.html")),
+    PendingScraper(
+      initialUrls = Url.fromVector(Vector("http://www.paulgraham.com/articles.html"))
+    ),
     RunningScraper(
       sleep  = 30.minutes,
       scrape = scrape
@@ -18,11 +20,12 @@ object PaulGrahamFeed {
 
   def apply(): ScraperStateMachine = machine
 
-  def scrape(machine: ScraperStateMachine, url: String, page: DomRoot): ScraperResult = {
+  def scrape(machine: ScraperStateMachine, url: Url, page: DomRoot): ScraperResult = {
     val essays = page
       .querySelectorAll("font a")
       .dropRight(1)
-      .flatMap(_.getAttribute("href"))
+      .flatMap(n => n.getAttribute("href"))
+      .flatMap(n => Url.parseFull(n))
       .map(ScraperTarget(PaulGrahamNode(), _))
     ScraperResult(url, None, essays, machine)
   }

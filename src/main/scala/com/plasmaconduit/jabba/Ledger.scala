@@ -10,7 +10,7 @@ trait Ledger {
 
 case class LedgerRead(ledger: Ledger, records: Observable[LedgerEntry])
 
-case class ScraperTargetAttribute(scraper: String, url: String)
+case class ScraperTargetAttribute(scraper: String, url: Url)
 
 case class ScraperStateChangeAttribute(scraper: String,
                                        state: ScraperActivityState)
