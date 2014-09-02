@@ -6,6 +6,10 @@ import scala.concurrent.duration._
 
 object InfoQPresentationNode {
 
+  val dateRegex = """([a-z-A-Z]+ [0-9]{1,2}, [0-9]{4})""".r
+
+  val summaryRegex = """Summary[^a-zA-Z0-9]*(.*)""".r
+
   val machine = ScraperStateMachine(
     "InfoQ_Presentation_Node",
     PendingScraper(),
@@ -40,15 +44,19 @@ object InfoQPresentationNode {
     "infoq_author"      -> infoqAuthor,
     "display_author"    -> displayAuthor,
     "image"             -> image,
-    "date"              -> date,
+    "publish_date"      -> date.getOrElse(""),
     "recorded_at"       -> recordedAt,
-    "summary"           -> summary,
+    "summary"           -> summary.getOrElse(""),
     "author_bio"        -> authorBio,
     "event_description" -> eventDescription
   )
 
-  def cleanUpPublishDate(string: String): String = string
+  def cleanUpPublishDate(string: String): Option[String] = {
+    dateRegex findFirstIn string map { case dateRegex(date) => date }
+  }
 
-  def cleanUpSummary(string: String): String = string
+  def cleanUpSummary(string: String): Option[String] = {
+    summaryRegex findFirstIn string map { case summaryRegex(summary) => summary }
+  }
 
 }
