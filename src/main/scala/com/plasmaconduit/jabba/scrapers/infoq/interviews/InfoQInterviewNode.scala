@@ -6,6 +6,10 @@ import scala.concurrent.duration._
 
 object InfoQInterviewNode {
 
+  val dateRegex = """([a-z-A-Z]+ [0-9]{1,2}, [0-9]{4})""".r
+
+  val bioRegex = """Bio[^a-zA-Z0-9]*(.*)""".r
+
   val machine = ScraperStateMachine(
     "InfoQ_Interview_Node",
     PendingScraper(),
@@ -35,7 +39,7 @@ object InfoQInterviewNode {
      image              <- imageTag.getAttribute("content");
      date               <- page.querySelector(".author_general").map(_.getText).map(cleanUpPublishDate); // different
      recordedAt         <- page.querySelector("h1 .recorded a").flatMap(_.getAttribute("href")).orElse(Some(""));
-     authorBio          <- page.querySelectorAll("#leftside p").headOption.map(_.getText);
+     authorBio          <- page.querySelectorAll("#leftside p").headOption.map(_.getText).map(cleanUpBio);
      eventDescription   <- page.querySelectorAll("#leftside p").lastOption.map(_.getText)
    ) yield Map(
      "title"               -> title,
@@ -44,18 +48,18 @@ object InfoQInterviewNode {
      "infoq_interviewer"   -> infoqInterviewer,
      "display_interviewer" -> displayInterviewer,
      "image"               -> image,
-     "date"                -> date,
+     "publish_date"        -> date.getOrElse(""),
      "recorded_at"         -> recordedAt,
-     "author_bio"          -> authorBio,
+     "author_bio"          -> authorBio.getOrElse(""),
      "event_description"   -> eventDescription
    )
 
-  def cleanUpPublishDate(string: String): String = string
+  def cleanUpPublishDate(string: String): Option[String] = {
+    dateRegex findFirstIn string map { case dateRegex(date) => date }
+  }
 
-  def cleanUpSummary(string: String): String = string
-
-  def cleanUpBio(string: String): String = string
-
-  def cleanUpEventDescription(string: String): String = string
+  def cleanUpBio(string: String): Option[String] = {
+    bioRegex findFirstIn string map { case bioRegex(summary) => summary }
+  }
 
  }
