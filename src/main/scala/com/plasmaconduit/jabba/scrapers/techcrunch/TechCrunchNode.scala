@@ -10,7 +10,7 @@ object TechCrunchNode {
     name = "TechCrunch_Node",
     pending = PendingScraper(),
     running = RunningScraper(
-      sleep  = 30.seconds,
+      sleep  = 15.seconds,
       scrape = scrape
     ),
     completed = CompletedScraper(),
@@ -26,13 +26,11 @@ object TechCrunchNode {
 
   def scrapeDataFromArticle(page: DomRoot): Option[Map[String, String]] = for (
     title          <- page.querySelector("h1.alpha.tweet-title").map(_.getText);
-    image          <- Some(scrapeImageFromArticle(page));
     tagsTag        <- page.querySelector("meta[name='sailthru.tags']");
     tags           <- tagsTag.getAttribute("content");
     timeTag        <- page.querySelector("meta[name='sailthru.date']");
     time           <- timeTag.getAttribute("content");
     authorTag      <- page.querySelector(".title-left .byline a[rel='author']");
-    displayAuthor  <- Some(authorTag.getText);
     tcAuthor       <- authorTag.getAttribute("href");
     twitterTag     <- page.querySelector(".title-left .byline a[rel='external']");
     twitterAuthor  <- twitterTag.getAttribute("href");
@@ -41,10 +39,10 @@ object TechCrunchNode {
     article        <- page.querySelector(".article-entry").map(_.getText)
   ) yield Map(
     "title"           -> title,
-    "image"           -> image,
+    "image"           -> scrapeImageFromArticle(page),
     "tags"            -> tags,
     "time"            -> time,
-    "display_author"  -> displayAuthor,
+    "display_author"  -> authorTag.getText,
     "tc_author"       -> tcAuthor,
     "twitter_author"  -> twitterAuthor,
     "description"     -> description
