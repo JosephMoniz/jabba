@@ -54,7 +54,9 @@ case class Jabba(transactor: Transactor,
         state.removeTargetFromQueue(target)
       case ScraperStateChangeEntry(_, change) =>
         state.transitionScraperState(change)
-      case ScraperResultEntry(_, scraped, next, data, targets) =>
+      case ScraperFailureEntry(_, target, _) =>
+        state.markTargetAsScraped(target)
+      case ScraperSuccessEntry(_, scraped, next, data, targets) =>
         state
           .transitionScraperState(next)
           .markTargetAsScraped(scraped)

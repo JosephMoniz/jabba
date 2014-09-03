@@ -11,20 +11,21 @@ object InfoQInterviewNode {
   val bioRegex = """Bio[^a-zA-Z0-9]*(.*)""".r
 
   val machine = ScraperStateMachine(
-    "InfoQ_Interview_Node",
-    PendingScraper(),
-    RunningScraper(
+    name    = "InfoQ_Interview_Node",
+    pending = PendingScraper(),
+    running = RunningScraper(
       sleep  = 30.seconds,
       scrape = scrape
     ),
-    CompletedScraper()
+    completed  = CompletedScraper(),
+    assertions = MustContainData
   )
 
    def apply(): ScraperStateMachine = machine
 
-   def scrape(machine: ScraperStateMachine, url: Url, page: DomRoot): ScraperResult = {
+   def scrape(machine: ScraperStateMachine, url: URL, page: DomRoot): ScraperResult = {
      val data = scrapeDataFromArticle(page)
-     ScraperResult(url, data, Vector(), machine)
+     ScraperSuccess(url, data, Vector(), machine)
    }
 
    def scrapeDataFromArticle(page: DomRoot): Option[Map[String, String]] = for(
