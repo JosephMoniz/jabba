@@ -7,20 +7,21 @@ import scala.concurrent.duration._
 object TechCrunchNode {
 
   val machine = ScraperStateMachine(
-    "TechCrunch_Node",
-    PendingScraper(),
-    RunningScraper(
+    name = "TechCrunch_Node",
+    pending = PendingScraper(),
+    running = RunningScraper(
       sleep  = 30.seconds,
       scrape = scrape
     ),
-    CompletedScraper()
+    completed = CompletedScraper(),
+    assertions = MustContainData
   )
 
   def apply(): ScraperStateMachine = machine
 
-  def scrape(machine: ScraperStateMachine, url: Url, page: DomRoot): ScraperResult = {
+  def scrape(machine: ScraperStateMachine, url: URL, page: DomRoot): ScraperResult = {
     val data = scrapeDataFromArticle(page)
-    ScraperResult(url, data, Vector(), machine)
+    ScraperSuccess(url, data, Vector(), machine)
   }
 
   def scrapeDataFromArticle(page: DomRoot): Option[Map[String, String]] = for (

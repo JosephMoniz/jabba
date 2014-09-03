@@ -10,14 +10,14 @@ sealed trait Scraper {
   val state: ScraperActivityState
 }
 
-case class PendingScraper(initialUrls: Vector[Url] = Vector(),
+case class PendingScraper(initialUrls: Vector[URL] = Vector(),
                           dependencies: Vector[Scraper] = Vector()) extends Scraper
 {
   val state: ScraperActivityState = Pending
 }
 
 case class RunningScraper(sleep: Duration,
-                          scrape: (ScraperStateMachine, Url, DomRoot) => ScraperResult) extends Scraper
+                          scrape: (ScraperStateMachine, URL, DomRoot) => ScraperResult) extends Scraper
 {
   val state: ScraperActivityState = Running
 }
@@ -31,16 +31,17 @@ case object Pending extends ScraperActivityState
 case object Running extends ScraperActivityState
 case object Completed extends ScraperActivityState
 
-class ScraperStateMachine(val name: String,
-                          val pending: PendingScraper,
-                          val running: RunningScraper,
-                          val completed: CompletedScraper,
-                          val lastRun: Long,
-                          val current: Scraper)
+case class ScraperStateMachine(name: String,
+                               pending: PendingScraper,
+                               running: RunningScraper,
+                               completed: CompletedScraper,
+                               assertions: ScraperAssertion,
+                               lastRun: Long,
+                               current: Scraper)
 {
 
   def toState(state: ScraperActivityState): ScraperStateMachine = {
-    new ScraperStateMachine(name, pending, running, completed, lastRun, state match {
+    copy(current = state match {
       case Pending   => pending
       case Running   => running
       case Completed => completed
@@ -54,7 +55,7 @@ class ScraperStateMachine(val name: String,
   }
 
   def updateLastRan(): ScraperStateMachine = current.state match {
-    case Running => new ScraperStateMachine(name, pending, running, completed, new Date().getTime, running)
+    case Running => copy(lastRun = new Date().getTime)
     case _       => this
   }
 
@@ -62,15 +63,18 @@ class ScraperStateMachine(val name: String,
 
 object ScraperStateMachine {
 
-  def apply(n: String, p: PendingScraper, r: RunningScraper, c: CompletedScraper) = {
-    new ScraperStateMachine(n, p, r, c, new Date().getTime, p)
+  def apply(name: String,
+            pending: PendingScraper,
+            running: RunningScraper,
+            completed: CompletedScraper,
+            assertions: ScraperAssertion = NilScraperAssertion): ScraperStateMachine =
+  {
+    ScraperStateMachine(name, pending, running, completed, assertions, new Date().getTime, pending)
   }
-
-  def unapply(m: ScraperStateMachine) = Some((m.name, m.pending, m.running, m.completed, m.current))
 
 }
 
-case class ScraperTarget(scraper: ScraperStateMachine, url: Url) {
+case class ScraperTarget(scraper: ScraperStateMachine, url: URL) {
 
   def toLedgerAdditionEntry: ScraperTargetAdditionEntry = {
     ScraperTargetAdditionEntry(new Date().getTime, ScraperTargetAttribute(scraper.name, url))
@@ -78,13 +82,17 @@ case class ScraperTarget(scraper: ScraperStateMachine, url: Url) {
 
 }
 
-case class ScraperResult(url: Url,
-                         data: Option[Map[String, String]],
-                         targets: Vector[ScraperTarget],
-                         scraper: ScraperStateMachine)
+sealed trait ScraperResult {
+  def toLedgerEntry: LedgerEntry
+}
+
+case class ScraperSuccess(url: URL,
+                          data: Option[Map[String, String]],
+                          targets: Vector[ScraperTarget],
+                          scraper: ScraperStateMachine) extends ScraperResult
 {
 
-  def toLedgerEntry: ScraperResultEntry = ScraperResultEntry(
+  def toLedgerEntry: LedgerEntry = ScraperSuccessEntry(
     timestamp = new Date().getTime,
     scraped   = ScraperTargetAttribute(scraper.name, url),
     state     = ScraperStateChangeAttribute(scraper.name, scraper.current.state),
@@ -94,29 +102,40 @@ case class ScraperResult(url: Url,
 
 }
 
+case class ScraperFailure(url: URL,
+                          scraper: ScraperStateMachine,
+                          reason: String) extends ScraperResult
+{
+  def toLedgerEntry: LedgerEntry = ScraperFailureEntry(
+    timestamp = new Date().getTime,
+    scraped   = ScraperTargetAttribute(scraper.name, url),
+    reason    = reason
+  )
+}
+
 case class ScraperState(stateMachine: ScraperStateMachine,
-                        queue: Vector[Url] = Vector(),
-                        done:  Vector[Url] = Vector())
+                        queue: Vector[URL] = Vector(),
+                        done:  Vector[URL] = Vector())
 {
 
-  def addUrlToQueue(url: Url): ScraperState = {
+  def addUrlToQueue(url: URL): ScraperState = {
     copy(queue = queue :+ url)
   }
 
-  def removeUrlFromQueue(url: Url): ScraperState = {
+  def removeUrlFromQueue(url: URL): ScraperState = {
     copy(queue = queue.filter(_ != url))
   }
 
-  def nextUrlFromQueue: Observable[Url] = queue.headOption match {
+  def nextUrlFromQueue: Observable[URL] = queue.headOption match {
     case None    => Observable.empty
     case Some(n) => Observable.just(n)
   }
 
-  def addUrlToDone(url: Url): ScraperState = {
+  def addUrlToDone(url: URL): ScraperState = {
     copy(done = done :+ url)
   }
 
-  def markUrlAsScraped(url: Url): ScraperState = {
+  def markUrlAsScraped(url: URL): ScraperState = {
     copy(stateMachine = stateMachine.updateLastRan())
       .removeUrlFromQueue(url)
       .addUrlToDone(url)

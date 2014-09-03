@@ -7,27 +7,31 @@ import scala.concurrent.duration._
 object PaulGrahamFeed {
 
   val machine = ScraperStateMachine(
-    "PaulGraham_Feed",
-    PendingScraper(
-      initialUrls = Url.fromVector(Vector("http://www.paulgraham.com/articles.html"))
+    name    = "PaulGraham_Feed",
+    pending = PendingScraper(
+      initialUrls = URLs("http://www.paulgraham.com/articles.html")
     ),
-    RunningScraper(
+    running = RunningScraper(
       sleep  = 30.minutes,
       scrape = scrape
     ),
-    CompletedScraper()
+    completed  = CompletedScraper(),
+    assertions = ScraperAssertions(
+      MustContainTargets,
+      MustContainTargetsFor(PaulGrahamNode())
+    )
   )
 
   def apply(): ScraperStateMachine = machine
 
-  def scrape(machine: ScraperStateMachine, url: Url, page: DomRoot): ScraperResult = {
+  def scrape(machine: ScraperStateMachine, url: URL, page: DomRoot): ScraperResult = {
     val essays = page
       .querySelectorAll("font a")
       .dropRight(1)
       .flatMap(n => n.getAttribute("href"))
-      .flatMap(n => Url.parseFull(n))
+      .flatMap(n => URL.parseFull(n))
       .map(ScraperTarget(PaulGrahamNode(), _))
-    ScraperResult(url, None, essays, machine)
+    ScraperSuccess(url, None, essays, machine)
   }
 
 }
