@@ -14,7 +14,7 @@ object InfoQPresentationNode {
     name    = "InfoQ_Presentation_Node",
     pending = PendingScraper(),
     running = RunningScraper(
-      sleep  = 30.seconds,
+      sleep  = 15.seconds,
       scrape = scrape
     ),
     completed  = CompletedScraper(),
