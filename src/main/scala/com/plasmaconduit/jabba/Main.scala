@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba
 
 import com.plasmaconduit.jabba.browsers.drivers._
 import com.plasmaconduit.jabba.ledgers._
+import com.plasmaconduit.jabba.scrapers.channel9._
 import com.plasmaconduit.jabba.scrapers.gigaom._
 import com.plasmaconduit.jabba.scrapers.infoq.interviews._
 import com.plasmaconduit.jabba.scrapers.infoq.presentations._
@@ -18,7 +19,6 @@ object Main {
     val transactor = Transactor(factory)
     val ledger     = MemoryLedger()
     val scrapers   = Scrapers.fromStateMachineVector(Vector(
-    /*
       TechCrunchFeed(),
       TechCrunchNode(),
       InfoQPresentationFeed(),
@@ -33,9 +33,10 @@ object Main {
       SvbtleNode(),
       StackOverflowFeed(),
       StackOverflowNode(),
-      */
       GigaOmFeed(),
-      GigaOmNode()
+      GigaOmNode(),
+      Channel9Feed(),
+      Channel9Node()
     ))
     val scraper = Jabba(transactor, ledger, scrapers)
     scraper.scrape()
