@@ -20,7 +20,7 @@ case class URL(protocol: String, host: String, port: Option[Int], relative: Rela
 case class RelativeURL(path: String, query: Option[String]) {
 
   override def toString: String = {
-    s"$path${query.getOrElse("")}"
+    s"$path${query.map("?" + _).getOrElse("")}"
   }
 
 }
