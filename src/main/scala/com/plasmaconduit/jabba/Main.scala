@@ -6,6 +6,7 @@ import com.plasmaconduit.jabba.scrapers.infoq.interviews._
 import com.plasmaconduit.jabba.scrapers.infoq.presentations._
 import com.plasmaconduit.jabba.scrapers.paulgraham._
 import com.plasmaconduit.jabba.scrapers.posthaven._
+import com.plasmaconduit.jabba.scrapers.svbtle._
 import com.plasmaconduit.jabba.scrapers.techcrunch._
 
 object Main {
@@ -24,7 +25,9 @@ object Main {
       PaulGrahamFeed(),
       PaulGrahamNode(),
       PostHavenFeed(),
-      PostHavenNode()
+      PostHavenNode(),
+      SvbtleFeed(),
+      SvbtleNode()
     ))
     val scraper = Jabba(transactor, ledger, scrapers)
     scraper.scrape()
