@@ -185,9 +185,9 @@ case class Scrapers(scrapers: Map[String, ScraperState] = HashMap()) {
 
   def transitionScraperState(s: ScraperStateChangeAttribute) = {
     scrapers
-    .get(s.scraper)
-    .map(n => Scrapers(scrapers + (s.scraper -> n.transitionState(s.state))))
-    .getOrElse(this)
+      .get(s.scraper)
+      .map(n => Scrapers(scrapers + (s.scraper -> n.transitionState(s.state))))
+      .getOrElse(this)
   }
 
   def readyScrapers: Observable[ScraperState] = {
