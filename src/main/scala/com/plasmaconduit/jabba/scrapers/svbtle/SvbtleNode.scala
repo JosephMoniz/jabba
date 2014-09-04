@@ -31,9 +31,9 @@ object SvbtleNode {
     twitterTag    <- document.querySelector("meta[property='twitter:creator']");
     twitterAuthor <- twitterTag.getAttribute("content").filter(_.length > 1).orElse(Some(""))
   ) yield Map(
-    "title"          -> title,
-    "date"           -> time,
-    "twitter_author" -> twitterAuthor
-  )
+      "title"          -> title,
+      "date"           -> time,
+      "twitter_author" -> twitterAuthor
+    )
 
 }
