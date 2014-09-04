@@ -38,11 +38,15 @@ object GigaOmNode {
   )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {
-    document.querySelector(s"meta[property='$property']").flatMap(_.getAttribute("content"))
+    document
+      .querySelector(s"meta[property='$property']")
+      .flatMap(_.getAttribute("content"))
   }
 
   def scrapeMetaPropertyVector(document: DomRoot, property: String): Vector[String] = {
-    document.querySelectorAll(s"meta[property='$property']").flatMap(_.getAttribute("content").toVector)
+    document
+      .querySelectorAll(s"meta[property='$property']")
+      .flatMap(_.getAttribute("content").toVector)
   }
 
   def scrapeImage(url: URL, document: DomRoot): String = {
