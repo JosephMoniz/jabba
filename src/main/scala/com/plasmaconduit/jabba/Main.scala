@@ -3,6 +3,7 @@ package com.plasmaconduit.jabba
 import com.plasmaconduit.jabba.browsers.drivers._
 import com.plasmaconduit.jabba.ledgers._
 import com.plasmaconduit.jabba.scrapers.a16z._
+import com.plasmaconduit.jabba.scrapers.bhorowitz._
 import com.plasmaconduit.jabba.scrapers.channel9._
 import com.plasmaconduit.jabba.scrapers.gigaom._
 import com.plasmaconduit.jabba.scrapers.infoq.interviews._
@@ -45,7 +46,9 @@ object Main {
       TheVergeFeed(),
       TheVergeNode(),
       A16zFeed(),
-      A16zNode()
+      A16zNode(),
+      BHorowitzFeed(),
+      BHorowitzNode()
     ))
     val scraper = Jabba(transactor, ledger, scrapers)
     scraper.scrape()
