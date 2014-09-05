@@ -35,7 +35,6 @@ object PandoNode {
     "publish_date"     -> publishDate,
     "image"            -> scrapeImage(url, document),
     "pando_authors"    -> scrapeMetaPropertyVector(document, "meta[property='article:author']").mkString(","),
-    "publisher"        -> "http://www.pando.com/",
     "scraped_time"     -> new Date().getTime.toString,
     "publisher"        -> "http://pando.com/"
   )

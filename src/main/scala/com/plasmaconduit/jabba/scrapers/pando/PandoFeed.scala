@@ -7,7 +7,7 @@ import scala.concurrent.duration._
 
 object PandoFeed {
 
-  val linkPattern = """http://pando.com/[0-9]{4}/[0-9]{2}/[0-9]{2}/.*/""".r
+  val linkPattern = """^http://pando.com/[0-9]{4}/[0-9]{2}/[0-9]{2}/.*/""".r
 
   val machine = ScraperStateMachine(
     name       = "Pando_Feed",
