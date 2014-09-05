@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.infoq.interviews
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -52,7 +53,8 @@ object InfoQInterviewNode {
      "publish_date"        -> date.getOrElse(""),
      "recorded_at"         -> recordedAt,
      "author_bio"          -> authorBio.getOrElse(""),
-     "event_description"   -> eventDescription
+     "event_description"   -> eventDescription,
+     "scraped_time"        -> new Date().getTime.toString
    )
 
   def cleanUpPublishDate(string: String): Option[String] = {

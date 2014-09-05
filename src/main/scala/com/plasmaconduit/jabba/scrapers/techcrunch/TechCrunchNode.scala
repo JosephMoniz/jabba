@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.techcrunch
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -45,7 +46,8 @@ object TechCrunchNode {
     "display_author"  -> authorTag.getText,
     "tc_author"       -> tcAuthor,
     "twitter_author"  -> twitterAuthor,
-    "description"     -> description
+    "description"     -> description,
+    "scraped_time"    -> new Date().getTime.toString
   )
 
   def scrapeImageFromArticle(page: DomRoot): String =

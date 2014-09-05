@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.pando
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -34,7 +35,8 @@ object PandoNode {
     "publish_date"     -> publishDate,
     "image"            -> scrapeImage(url, document),
     "pando_authors"    -> scrapeMetaPropertyVector(document, "meta[property='article:author']").mkString(","),
-    "publisher"        -> "http://www.pando.com/"
+    "publisher"        -> "http://www.pando.com/",
+    "scraped_time"     -> new Date().getTime.toString
   )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {

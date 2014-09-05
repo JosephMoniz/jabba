@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.paulgraham
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -31,7 +32,8 @@ object PaulGrahamNode {
   ) yield Map(
     "title"          -> title,
     "publish_date"   -> date.getOrElse(""),
-    "twitter_author" -> "https://twitter.com/paulg"
+    "twitter_author" -> "https://twitter.com/paulg",
+    "scraped_time"   -> new Date().getTime.toString
   )
 
   def cleanUpDate(string: String): Option[String] = {

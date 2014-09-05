@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.theverge
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -39,7 +40,8 @@ object TheVergeNode {
     "theverge_author"  -> thevergeAuthor,
     "display_author"   -> authorTag.getText,
     "tags"             -> tags,
-    "publisher"        -> "http://www.theverge.com/"
+    "publisher"        -> "http://www.theverge.com/",
+    "scraped_time"     -> new Date().getTime.toString
   )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {

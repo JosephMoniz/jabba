@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.channel9
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom.DomRoot
 import scala.concurrent.duration._
@@ -36,7 +37,8 @@ object Channel9Node {
       "mp4_video"        -> video,
       "secure_mp4_video" -> secureVideo,
       "tags"             -> scrapeMetaProperty(document, "meta[name='keywords']").getOrElse(""),
-      "publisher"        -> "http://channel9.msdn.com/"
+      "publisher"        -> "http://channel9.msdn.com/",
+      "scraped_time"     -> new Date().getTime.toString
     )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {
