@@ -36,7 +36,8 @@ object GigaOmNode {
     "image"          -> scrapeImage(url, document),
     "gigaom_authors" -> scrapeMetaPropertyVector(document, "article:author").mkString(","),
     "tags"           -> scrapeMetaPropertyVector(document, "article:tag").mkString(","),
-    "scraped_time"   -> new Date().getTime.toString
+    "scraped_time"   -> new Date().getTime.toString,
+    "publisher"      -> "https://gigaom.com/"
   )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {

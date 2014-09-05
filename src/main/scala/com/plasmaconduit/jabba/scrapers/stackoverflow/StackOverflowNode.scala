@@ -31,7 +31,8 @@ object StackOverflowNode {
       "so_ask_user"      -> verifyLinks(url, document.querySelectorAll(".owner .user-details a").take(1)),
       "so_answer_users"  -> verifyLinks(url, document.querySelectorAll(".user-details a").drop(1)),
       "so_comment_users" -> verifyLinks(url, document.querySelectorAll("a.comment-user")),
-      "scraped_time"     -> new Date().getTime.toString
+      "scraped_time"     -> new Date().getTime.toString,
+      "publisher"        -> "http://stackoverflow.com/"
     )})
   }
 

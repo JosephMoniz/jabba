@@ -51,7 +51,8 @@ object InfoQPresentationNode {
     "summary"           -> summary.getOrElse(""),
     "author_bio"        -> authorBio,
     "event_description" -> eventDescription,
-    "scraped_time"      -> new Date().getTime.toString
+    "scraped_time"      -> new Date().getTime.toString,
+    "publisher"         -> "http://infoq.com/"
   )
 
   def cleanUpPublishDate(string: String): Option[String] = {
