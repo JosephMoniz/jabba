@@ -6,6 +6,7 @@ import com.plasmaconduit.jabba.scrapers.channel9._
 import com.plasmaconduit.jabba.scrapers.gigaom._
 import com.plasmaconduit.jabba.scrapers.infoq.interviews._
 import com.plasmaconduit.jabba.scrapers.infoq.presentations._
+import com.plasmaconduit.jabba.scrapers.pando._
 import com.plasmaconduit.jabba.scrapers.paulgraham._
 import com.plasmaconduit.jabba.scrapers.posthaven._
 import com.plasmaconduit.jabba.scrapers.stackoverflow._
@@ -36,7 +37,9 @@ object Main {
       GigaOmFeed(),
       GigaOmNode(),
       Channel9Feed(),
-      Channel9Node()
+      Channel9Node(),
+      PandoFeed(),
+      PandoNode()
     ))
     val scraper = Jabba(transactor, ledger, scrapers)
     scraper.scrape()
