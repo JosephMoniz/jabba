@@ -119,7 +119,10 @@ case class ScraperState(stateMachine: ScraperStateMachine,
 {
 
   def addUrlToQueue(url: URL): ScraperState = {
-    copy(queue = queue :+ url)
+    queue.find(_ == url) match {
+      case None    => copy(queue = queue :+ url)
+      case Some(n) => this
+    }
   }
 
   def removeUrlFromQueue(url: URL): ScraperState = {
@@ -132,7 +135,10 @@ case class ScraperState(stateMachine: ScraperStateMachine,
   }
 
   def addUrlToDone(url: URL): ScraperState = {
-    copy(done = done :+ url)
+    done.find(_ == url) match {
+      case None    => copy(done = done :+ url)
+      case Some(n) => this
+    }
   }
 
   def markUrlAsScraped(url: URL): ScraperState = {
