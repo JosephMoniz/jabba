@@ -36,7 +36,8 @@ object PandoNode {
     "image"            -> scrapeImage(url, document),
     "pando_authors"    -> scrapeMetaPropertyVector(document, "meta[property='article:author']").mkString(","),
     "publisher"        -> "http://www.pando.com/",
-    "scraped_time"     -> new Date().getTime.toString
+    "scraped_time"     -> new Date().getTime.toString,
+    "publisher"        -> "http://pando.com/"
   )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {

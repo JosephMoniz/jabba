@@ -47,6 +47,7 @@ object TechCrunchNode {
     "tc_author"       -> tcAuthor,
     "twitter_author"  -> twitterAuthor,
     "description"     -> description,
+    "publisher"       -> "http://techcrunch.com/",
     "scraped_time"    -> new Date().getTime.toString
   )
 

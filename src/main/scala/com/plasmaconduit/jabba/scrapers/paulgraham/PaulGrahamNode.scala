@@ -33,7 +33,8 @@ object PaulGrahamNode {
     "title"          -> title,
     "publish_date"   -> date.getOrElse(""),
     "twitter_author" -> "https://twitter.com/paulg",
-    "scraped_time"   -> new Date().getTime.toString
+    "scraped_time"   -> new Date().getTime.toString,
+    "publisher"      -> "http://paulgraham.com/"
   )
 
   def cleanUpDate(string: String): Option[String] = {

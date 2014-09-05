@@ -47,7 +47,11 @@ object PostHavenNode {
       map       <- data;
       authorTag <- document.querySelector(".author a");
       ph_author <- authorTag.getAttribute("href")
-    ) yield map + ("ph_author" -> ph_author, "display_author" -> authorTag.getText)
+    ) yield map + (
+      "ph_author"      -> ph_author,
+      "display_author" -> authorTag.getText,
+      "publisher"      -> url.toBase
+    )
     appended.orElse(data)
   }
 
