@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.svbtle
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -33,7 +34,8 @@ object SvbtleNode {
   ) yield Map(
       "title"          -> title,
       "date"           -> time,
-      "twitter_author" -> twitterAuthor
+      "twitter_author" -> twitterAuthor,
+      "scraped_time"   -> new Date().getTime.toString
     )
 
 }

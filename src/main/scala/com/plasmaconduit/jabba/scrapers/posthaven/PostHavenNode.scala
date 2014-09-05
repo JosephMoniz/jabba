@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.posthaven
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -32,9 +33,10 @@ object PostHavenNode {
     dateTag        <- document.querySelector(".actual-date");
     date           <- dateTag.getAttribute("data-posthaven-date-utc-iso8601")
   ) yield Map(
-    "title"       -> title,
-    "description" -> description,
-    "date"        -> date
+    "title"        -> title,
+    "description"  -> description,
+    "date"         -> date,
+    "scraped_time" -> new Date().getTime.toString
   )
 
   def scrapeAuthorFromArticle(url: URL,

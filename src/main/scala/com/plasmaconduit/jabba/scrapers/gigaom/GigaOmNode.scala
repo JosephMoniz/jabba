@@ -1,5 +1,6 @@
 package com.plasmaconduit.jabba.scrapers.gigaom
 
+import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
@@ -34,7 +35,8 @@ object GigaOmNode {
     "publish_date"   -> publishDate,
     "image"          -> scrapeImage(url, document),
     "gigaom_authors" -> scrapeMetaPropertyVector(document, "article:author").mkString(","),
-    "tags"           -> scrapeMetaPropertyVector(document, "article:tag").mkString(",")
+    "tags"           -> scrapeMetaPropertyVector(document, "article:tag").mkString(","),
+    "scraped_time"   -> new Date().getTime.toString
   )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {
