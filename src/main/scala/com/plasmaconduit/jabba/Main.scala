@@ -12,6 +12,7 @@ import com.plasmaconduit.jabba.scrapers.posthaven._
 import com.plasmaconduit.jabba.scrapers.stackoverflow._
 import com.plasmaconduit.jabba.scrapers.svbtle._
 import com.plasmaconduit.jabba.scrapers.techcrunch._
+import com.plasmaconduit.jabba.scrapers.theverge._
 
 object Main {
 
@@ -39,7 +40,9 @@ object Main {
       Channel9Feed(),
       Channel9Node(),
       PandoFeed(),
-      PandoNode()
+      PandoNode(),
+      TheVergeFeed(),
+      TheVergeNode()
     ))
     val scraper = Jabba(transactor, ledger, scrapers)
     scraper.scrape()

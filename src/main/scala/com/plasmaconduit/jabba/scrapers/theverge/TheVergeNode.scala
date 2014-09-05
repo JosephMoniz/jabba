@@ -1,19 +1,19 @@
-package com.plasmaconduit.jabba.scrapers.pando
+package com.plasmaconduit.jabba.scrapers.theverge
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import scala.concurrent.duration._
 
-object PandoNode {
+object TheVergeNode {
 
   val machine = ScraperStateMachine(
-    name = "Pando_Node",
+    name = "TheVerge_Node",
     pending = PendingScraper(),
     running = RunningScraper(
       sleep = 15.seconds,
       scrape = scrape
     ),
-    completed  = CompletedScraper(),
+    completed = CompletedScraper(),
     assertions = MustContainData
   )
 
@@ -25,16 +25,21 @@ object PandoNode {
   }
 
   def scrapeDataFromArticle(url: URL, document: DomRoot): Option[Map[String, String]] = for (
-    title       <- scrapeMetaProperty(document, "meta[property='og:title']");
-    description <- scrapeMetaProperty(document, "meta[property='og:description']");
-    publishDate <- scrapeMetaProperty(document, "meta[property='article:published_time']")
+    title          <- scrapeMetaProperty(document, "meta[property='og:title']");
+    description    <- scrapeMetaProperty(document, "meta[property='og:description']");
+    publishDate    <- scrapeMetaProperty(document, "meta[name='sailthru.date']");
+    authorTag      <- document.querySelector(".author a");
+    thevergeAuthor <- authorTag.getAttribute("href");
+    tags           <- scrapeMetaProperty(document, "meta[name='sailthru.tags']")
   ) yield Map(
     "title"            -> title,
     "description"      -> description,
     "publish_date"     -> publishDate,
     "image"            -> scrapeImage(url, document),
-    "pando_authors"    -> scrapeMetaPropertyVector(document, "meta[property='article:author']").mkString(","),
-    "publisher"        -> "http://www.pando.com/"
+    "theverge_author"  -> thevergeAuthor,
+    "display_author"   -> authorTag.getText,
+    "tags"             -> tags,
+    "publisher"        -> "http://www.theverge.com/"
   )
 
   def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {
