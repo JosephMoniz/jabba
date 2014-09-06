@@ -12,6 +12,7 @@ object A16zFeed {
     pending = PendingScraper(
       initialUrls = URLs(
         "http://a16z.com/",
+        "http://blog.pmarca.com/",
         "http://john.a16z.com/",
         "http://jeff.a16z.com/",
         "http://peter.a16z.com/",
