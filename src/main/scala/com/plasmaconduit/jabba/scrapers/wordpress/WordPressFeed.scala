@@ -12,10 +12,10 @@ object WordPressFeed {
     name = "WordPress_Feed",
     pending = PendingScraper(
       initialUrls = URLs(
-        "http://john.a16z.com/",
-        "http://jeff.a16z.com/",
-        "http://peter.a16z.com/",
-        "http://scott.a16z.com/"
+        "http://john.a16z.com/",  // http://john.a16z.com/page/2/
+        "http://jeff.a16z.com/",  // http://jeff.a16z.com/page/2/
+        "http://peter.a16z.com/", // http://peter.a16z.com/page/2/
+        "http://scott.a16z.com/"  // http://scott.a16z.com/page/2/
       )
     ),
     running = RunningScraper(

@@ -26,14 +26,24 @@ object A16zNode {
   }
 
   def scrapeDataFromArticle(url: URL, document: DomRoot): Option[Map[String, String]] = for (
-   title <- document.querySelector(".article h1")
+   title <- document.querySelector(".article h1, .middle h1")
   ) yield Map(
     "title"            -> title.getText,
-    "publish_date"     -> url.toString.drop(16).take(10),
-    "a16z_author"      -> document.querySelector(".post-byline").map(_.getText.drop(3)).getOrElse(""),
+    "publish_date"     -> url.toRequestPath.drop(1).take(10),
+    "a16z_author"      -> scrapeAuthor(document),
     "tags"             -> document.querySelectorAll("a[rel='tag']").map(_.getText).mkString(","),
     "scraped_time"     -> new Date().getTime.toString,
     "publisher"        -> "http://a16z.com/"
   )
+
+  def scrapeAuthor(document: DomRoot): String = {
+    document
+      .querySelector(".post-byline")
+      .map(_.getText.drop(3))
+      .orElse({
+        document.querySelector("meta[name='application-name']").flatMap(_.getAttribute("content"))
+      })
+      .getOrElse("")
+  }
 
 }
