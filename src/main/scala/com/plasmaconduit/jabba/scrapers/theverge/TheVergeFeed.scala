@@ -1,7 +1,8 @@
 package com.plasmaconduit.jabba.scrapers.theverge
 
 import com.plasmaconduit.jabba._
-import com.plasmaconduit.jabba.scrapers.common.SimpleFeedScraper
+import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object TheVergeFeed {
@@ -13,10 +14,10 @@ object TheVergeFeed {
     ),
     running = RunningScraper(
      sleep  = 150.seconds,
-     scrape = SimpleFeedScraper(
-       nodeLinks  = ".body h3 a",
+     scrape = FeedScraper(
+       nodeLinks  = CssSelectorNodes(".body h3 a"),
        nodeTarget = TheVergeNode(),
-       nextLink   = "a[rel='next']",
+       nextLinks  = RelNextLink(),
        nextTarget = TheVergeFeed()
      )
     ),

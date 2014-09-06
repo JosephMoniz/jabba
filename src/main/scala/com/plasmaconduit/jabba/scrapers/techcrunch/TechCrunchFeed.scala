@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba.scrapers.techcrunch
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 
@@ -14,10 +15,10 @@ object TechCrunchFeed {
     ),
     running = RunningScraper(
       sleep  = 300.seconds,
-      scrape = SimpleFeedScraper(
-        nodeLinks  = ".river-block h2 a",
+      scrape = FeedScraper(
+        nodeLinks  = CssSelectorNodes(".river-block h2 a"),
         nodeTarget = TechCrunchNode(),
-        nextLink   = ".pagination li a",
+        nextLinks  = LastNode(CssSelectorNodes(".pagination li a")),
         nextTarget = TechCrunchFeed()
       )
     ),

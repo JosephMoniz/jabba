@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba.scrapers.svbtle
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object SvbtleFeed {
@@ -17,10 +18,10 @@ object SvbtleFeed {
     ),
     running = RunningScraper(
       sleep  = 150.seconds,
-      scrape = SimpleFeedScraper(
-        nodeLinks  = ".article_title a",
+      scrape = FeedScraper(
+        nodeLinks  = CssSelectorNodes(".article_title a"),
         nodeTarget = SvbtleNode(),
-        nextLink   = ".next a[rel='next']",
+        nextLinks  = RelNextLink(),
         nextTarget = SvbtleFeed()
       )
     ),

@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba.scrapers.infoq.presentations
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object InfoQPresentationFeed {
@@ -13,10 +14,10 @@ object InfoQPresentationFeed {
     ),
     running = RunningScraper(
       sleep  = 180.seconds,
-      scrape = SimpleFeedScraper(
-        nodeLinks  = ".news_type_video h2 a",
+      scrape = FeedScraper(
+        nodeLinks  = CssSelectorNodes(".news_type_video h2 a"),
         nodeTarget = InfoQPresentationNode(),
-        nextLink   = ".load_more_articles a.blue",
+        nextLinks  = LastNode(CssSelectorNodes(".load_more_articles a.blue")),
         nextTarget = InfoQPresentationFeed()
       )
     ),

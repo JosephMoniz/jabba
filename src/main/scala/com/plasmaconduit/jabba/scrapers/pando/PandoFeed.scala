@@ -3,6 +3,7 @@ package com.plasmaconduit.jabba.scrapers.pando
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators.{LastNode, CssSelectorNodes, DatedLinks}
 import scala.concurrent.duration._
 
 object PandoFeed {
@@ -16,13 +17,10 @@ object PandoFeed {
     ),
     running    = RunningScraper(
       sleep  = 240.seconds,
-      scrape = ClosureFeedScraper(
-        nodeLinks  = (document: DomRoot) =>
-          document
-            .querySelectorAll("[data-pubdate] .text a, [data-pubdate] .entry-title a")
-            .filter(n => n.getAttribute("href").flatMap(m => linkPattern.findFirstIn(m)).isDefined),
+      scrape = FeedScraper(
+        nodeLinks  = DatedLinks(CssSelectorNodes("[data-pubdate] .text a, [data-pubdate] .entry-title a")),
         nodeTarget = PandoNode(),
-        nextLinks  = (document: DomRoot) => document.querySelectorAll(".pager h3 a").lastOption.toVector,
+        nextLinks  = LastNode(CssSelectorNodes(".pager h3 a")),
         nextTarget = PandoFeed()
       )
     ),

@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba.scrapers.stackoverflow
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object StackOverflowFeed {
@@ -13,10 +14,10 @@ object StackOverflowFeed {
     ),
     running = RunningScraper(
       sleep  = 225.seconds,
-      scrape = SimpleFeedScraper(
-        nodeLinks  = "a.question-hyperlink",
+      scrape = FeedScraper(
+        nodeLinks  = CssSelectorNodes("a.question-hyperlink"),
         nodeTarget = StackOverflowNode(),
-        nextLink   = "a[rel='next']",
+        nextLinks  = RelNextLink(),
         nextTarget = StackOverflowFeed()
       )
     ),

@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba.scrapers.channel9
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object Channel9Feed {
@@ -13,10 +14,10 @@ object Channel9Feed {
     ),
     running    = RunningScraper(
       sleep  = 150.seconds,
-      scrape = SimpleFeedScraper(
-        nodeLinks  = "a.title",
+      scrape = FeedScraper(
+        nodeLinks  = CssSelectorNodes("a.title"),
         nodeTarget = Channel9Node(),
-        nextLink   = ".next a",
+        nextLinks  = LastNode(CssSelectorNodes(".next a")),
         nextTarget = Channel9Feed()
       )
     ),

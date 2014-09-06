@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba.scrapers.posthaven
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators.{CssSelectorNodes, RelNextLink}
 import scala.concurrent.duration._
 
 object PostHavenFeed {
@@ -22,10 +23,10 @@ object PostHavenFeed {
     ),
     running = RunningScraper(
       sleep  = 150.seconds,
-      scrape = SimpleFeedScraper(
-        nodeLinks  = ".post-title a",
+      scrape = FeedScraper(
+        nodeLinks  = CssSelectorNodes(".post-title a"),
         nodeTarget = PostHavenNode(),
-        nextLink   = ".pagination a[rel='next']",
+        nextLinks  = RelNextLink(),
         nextTarget = PostHavenFeed()
       )
     ),
