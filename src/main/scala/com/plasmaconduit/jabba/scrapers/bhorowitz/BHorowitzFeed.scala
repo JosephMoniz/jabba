@@ -2,6 +2,7 @@ package com.plasmaconduit.jabba.scrapers.bhorowitz
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object BHorowitzFeed {
@@ -13,10 +14,10 @@ object BHorowitzFeed {
     ),
     running = RunningScraper(
       sleep  = 150.seconds,
-      scrape = SimpleFeedScraper(
-        nodeLinks  = "h3 a",
+      scrape = FeedScraper(
+        nodeLinks  = CssSelectorNodes("h3 a"),
         nodeTarget = BHorowitzNode(),
-        nextLink   = ".pagination a",
+        nextLinks  = LastNode(CssSelectorNodes( ".pagination a")),
         nextTarget = BHorowitzFeed()
       )
     ),

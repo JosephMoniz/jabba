@@ -10,12 +10,18 @@ object A16zFeed {
     val machine = ScraperStateMachine(
     name = "A16z_Feed",
     pending = PendingScraper(
-      initialUrls = URLs("http://a16z.com/")
+      initialUrls = URLs(
+        "http://a16z.com/",
+        "http://john.a16z.com/",
+        "http://jeff.a16z.com/",
+        "http://peter.a16z.com/",
+        "http://scott.a16z.com/"
+      )
     ),
     running = RunningScraper(
       sleep = 150.seconds,
       scrape = FeedScraper(
-        nodeLinks  = DatedLinks(CssSelectorNodes(".post a")),
+        nodeLinks  = DatedLinks(CssSelectorNodes("a")),
         nodeTarget = A16zNode(),
         nextLinks  = CssSelectorNodes(".nav-previous a"),
         nextTarget = A16zFeed()

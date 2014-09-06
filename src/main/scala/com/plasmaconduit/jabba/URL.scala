@@ -9,7 +9,7 @@ case class URL(protocol: String, host: String, port: Option[Int], relative: Rela
   }
 
   def toBase: String = {
-    s"$protocol://$host${port.map(":" + _.toString)}"
+    s"$protocol://$host${port.map(":" + _.toString).getOrElse("")}"
   }
 
   def toRequestPath: String = {
