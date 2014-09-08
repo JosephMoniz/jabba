@@ -20,7 +20,7 @@ object ScraperAssertion {
 
 }
 
-case class ScraperAssertions(assertions: Vector[ScraperAssertion]) extends ScraperAssertion {
+final case class ScraperAssertions(assertions: Vector[ScraperAssertion]) extends ScraperAssertion {
 
   def assert(result: ScraperSuccess): Either[ScraperFailure, ScraperSuccess] = {
     assertions.foldLeft[Either[ScraperFailure, ScraperSuccess]](Right(result)) {(s, a) =>
@@ -76,7 +76,7 @@ case object MustContainTargets extends ScraperAssertion {
 
 }
 
-case class MustContainTargetsFor(machine: ScraperStateMachine) extends ScraperAssertion {
+final case class MustContainTargetsFor(machine: ScraperStateMachine) extends ScraperAssertion {
 
   def assert(result: ScraperSuccess): Either[ScraperFailure, ScraperSuccess] = {
     result.targets.find(n => n.scraper.name == machine.name) match {

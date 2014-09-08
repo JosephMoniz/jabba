@@ -8,7 +8,7 @@ import org.openqa.selenium._
 import org.openqa.selenium.htmlunit._
 import rx.lang.scala._
 
-case class HtmlUnitBrowser(driver: Option[WebDriver] = None) extends BrowserDriver {
+final case class HtmlUnitBrowser(driver: Option[WebDriver] = None) extends BrowserDriver {
 
   def open: Observable[OpenBrowser] = {
     Logger.getLogger("").setLevel(Level.OFF)

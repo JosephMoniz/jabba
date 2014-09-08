@@ -3,10 +3,10 @@ package com.plasmaconduit.jabba.scrapers.common.combinators
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 
-object CssSelectorNodes {
+object MetaContentVectorScraper {
 
-  def apply(selector: String) = {
-    (url: URL, document: DomRoot) => document.querySelectorAll(selector)
+  def apply(key: String, nodes: (URL, DomRoot) => Vector[DomNode]) = {
+    AttributeScraper(key, "content", nodes)
   }
 
 }

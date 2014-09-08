@@ -2,7 +2,7 @@ package com.plasmaconduit.jabba.scrapers.infoq.interviews
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
-import com.plasmaconduit.jabba.scrapers.common.combinators._
+import com.plasmaconduit.jabba.browsers.dom.combinators._
 import scala.concurrent.duration._
 
 object InfoQInterviewFeed {

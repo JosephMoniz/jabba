@@ -1,8 +1,9 @@
 package com.plasmaconduit.jabba.scrapers.stackoverflow
 
-import java.util.Date
 import com.plasmaconduit.jabba._
-import com.plasmaconduit.jabba.browsers.dom._
+import com.plasmaconduit.jabba.browsers.dom.combinators._
+import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object StackOverflowNode {
@@ -12,38 +13,19 @@ object StackOverflowNode {
     pending = PendingScraper(),
     running = RunningScraper(
       15.seconds,
-      scrape = scrape
+      scrape = NodeScraper(
+        TextScraper("title", FirstNode(CssSelectorNodes("a.question-hyperlink"))),
+        UrlLinksScraper("so_ask_user", FirstNode(CssSelectorNodes(".owner .user-details a"))),
+        OptionalScraper(UrlLinksScraper("so_answer_users", DropNodes(1, CssSelectorNodes(".owner .user-details a")))),
+        OptionalScraper(UrlLinksScraper("so_comment_users", CssSelectorNodes("a.comment-user"))),
+        FixedScraper("publisher", "http://stackoverflow.com/"),
+        TimedScraper()
+      )
     ),
     completed = CompletedScraper(),
     assertions = MustContainData
   )
 
   def apply(): ScraperStateMachine = machine
-
-  def scrape(machine: ScraperStateMachine, url: URL, document: DomRoot): ScraperResult = {
-    val data = scrapeDataFromArticle(url, document)
-    ScraperSuccess(url, data, Vector(), machine)
-  }
-
-  def scrapeDataFromArticle(url: URL, document: DomRoot): Option[Map[String, String]] = {
-    document.querySelector("a.question-hyperlink").map({ titleTag => Map(
-      "title"            -> titleTag.getText,
-      "so_ask_user"      -> verifyLinks(url, document.querySelectorAll(".owner .user-details a").take(1)),
-      "so_answer_users"  -> verifyLinks(url, document.querySelectorAll(".user-details a").drop(1)),
-      "so_comment_users" -> verifyLinks(url, document.querySelectorAll("a.comment-user")),
-      "scraped_time"     -> new Date().getTime.toString,
-      "publisher"        -> "http://stackoverflow.com/"
-    )})
-  }
-
-  def canonicalizeLinks(url: URL, tags: Vector[DomNode]): Vector[String] = for (
-    node          <- tags;
-    link          <- node.getAttribute("href");
-    canonicalized <- URL.canonicalize(url, link)
-  ) yield canonicalized.toString
-
-  def verifyLinks(url: URL, tags: Vector[DomNode]): String = {
-    canonicalizeLinks(url, tags).mkString(",")
-  }
 
 }

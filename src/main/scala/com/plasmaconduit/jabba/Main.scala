@@ -23,7 +23,6 @@ object Main {
     val transactor = Transactor(factory)
     val ledger     = MemoryLedger()
     val scrapers   = Scrapers.fromStateMachineVector(Vector(
-    /*
       TechCrunchFeed(),
       TechCrunchNode(),
       InfoQPresentationFeed(),
@@ -46,11 +45,10 @@ object Main {
       PandoNode(),
       TheVergeFeed(),
       TheVergeNode(),
-      */
       A16zFeed(),
-      A16zNode()
-      //BHorowitzFeed(),
-      //BHorowitzNode()
+      A16zNode(),
+      BHorowitzFeed(),
+      BHorowitzNode()
     ))
     val scraper = Jabba(transactor, ledger, scrapers)
     scraper.scrape()

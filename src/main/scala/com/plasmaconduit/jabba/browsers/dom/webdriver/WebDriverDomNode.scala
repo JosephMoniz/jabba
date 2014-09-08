@@ -4,7 +4,7 @@ import scala.collection.JavaConversions._
 import com.plasmaconduit.jabba.browsers.dom.DomNode
 import org.openqa.selenium._
 
-case class WebDriverDomNode(element: WebElement) extends DomNode {
+final case class WebDriverDomNode(element: WebElement) extends DomNode {
 
   override def getAttribute(attribute: String): Option[String] =
     Option(element.getAttribute(attribute))

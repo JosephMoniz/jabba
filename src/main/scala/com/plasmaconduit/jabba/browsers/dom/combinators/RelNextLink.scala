@@ -1,4 +1,4 @@
-package com.plasmaconduit.jabba.scrapers.common.combinators
+package com.plasmaconduit.jabba.browsers.dom.combinators
 
 object RelNextLink {
 

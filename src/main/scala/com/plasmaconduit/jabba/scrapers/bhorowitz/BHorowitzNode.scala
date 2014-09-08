@@ -3,6 +3,9 @@ package com.plasmaconduit.jabba.scrapers.bhorowitz
 import java.util.Date
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
+import com.plasmaconduit.jabba.browsers.dom.combinators.CssSelectorNodes
+import com.plasmaconduit.jabba.scrapers.common.NodeScraper
+import com.plasmaconduit.jabba.scrapers.common.combinators.{TimedScraper, FixedScraper, TextScraper, MetaContentScraper}
 import scala.concurrent.duration._
 
 object BHorowitzNode {
@@ -12,34 +15,17 @@ object BHorowitzNode {
     pending = PendingScraper(),
     running = RunningScraper(
       sleep = 15.seconds,
-      scrape = scrape
+      scrape = NodeScraper(
+        MetaContentScraper("title", CssSelectorNodes("meta[property='og:title']")),
+        TextScraper("publish_date", CssSelectorNodes(".byline")),
+        FixedScraper("twitter_author", "https://twitter.com/bhorowitz"),
+        TimedScraper()
+      )
     ),
     completed = CompletedScraper(),
     assertions = MustContainData
   )
 
   def apply(): ScraperStateMachine = machine
-
-  def scrape(machine: ScraperStateMachine, url: URL, document: DomRoot): ScraperResult = {
-    val data = scrapeDataFromArticle(url, document)
-    ScraperSuccess(url, data, Vector(), machine)
-  }
-
-  def scrapeDataFromArticle(url: URL, document: DomRoot): Option[Map[String, String]] = for (
-    title       <- scrapeMetaProperty(document, "meta[property='og:title']");
-    publishDate <- document.querySelector(".byline")
-  ) yield Map(
-    "title"          -> title,
-    "publish_date"   -> publishDate.getText,
-    "twitter_author" -> "https://twitter.com/bhorowitz",
-    "publisher"      -> "http://www.bhorowitz.com/",
-    "scraped_time"   -> new Date().getTime.toString
-  )
-
-  def scrapeMetaProperty(document: DomRoot, property: String): Option[String] = {
-    document
-      .querySelector(property)
-      .flatMap(_.getAttribute("content"))
-  }
 
 }

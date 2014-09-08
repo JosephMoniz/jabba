@@ -2,7 +2,7 @@ package com.plasmaconduit.jabba
 
 import rx.lang.scala._
 
-case class Transactor(factory: BrowserFactory) {
+final case class Transactor(factory: BrowserFactory) {
 
   def transactReadyScrapers(obs: Observable[ScraperState]): Observable[ScraperResult] = for (
     scraper <- obs;

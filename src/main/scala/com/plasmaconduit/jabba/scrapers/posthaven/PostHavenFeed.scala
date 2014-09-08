@@ -2,7 +2,7 @@ package com.plasmaconduit.jabba.scrapers.posthaven
 
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.scrapers.common._
-import com.plasmaconduit.jabba.scrapers.common.combinators.{CssSelectorNodes, RelNextLink}
+import com.plasmaconduit.jabba.browsers.dom.combinators.{CssSelectorNodes, RelNextLink}
 import scala.concurrent.duration._
 
 object PostHavenFeed {

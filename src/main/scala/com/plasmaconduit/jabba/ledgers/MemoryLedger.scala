@@ -3,7 +3,7 @@ package com.plasmaconduit.jabba.ledgers
 import com.plasmaconduit.jabba._
 import rx.lang.scala._
 
-case class MemoryLedger(events: Vector[LedgerEntry] = Vector()) extends Ledger {
+final case class MemoryLedger(events: Vector[LedgerEntry] = Vector()) extends Ledger {
 
   def record(entry: LedgerEntry): Observable[Ledger] = {
     Observable.create({(observer) =>
