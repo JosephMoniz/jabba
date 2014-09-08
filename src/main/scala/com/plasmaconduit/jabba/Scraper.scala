@@ -10,19 +10,19 @@ sealed trait Scraper {
   val state: ScraperActivityState
 }
 
-case class PendingScraper(initialUrls: Vector[URL] = Vector(),
-                          dependencies: Vector[Scraper] = Vector()) extends Scraper
+final case class PendingScraper(initialUrls: Vector[URL] = Vector(),
+                                dependencies: Vector[Scraper] = Vector()) extends Scraper
 {
   val state: ScraperActivityState = Pending
 }
 
-case class RunningScraper(sleep: Duration,
-                          scrape: (ScraperStateMachine, URL, DomRoot) => ScraperResult) extends Scraper
+final case class RunningScraper(sleep: Duration,
+                                scrape: (ScraperStateMachine, URL, DomRoot) => ScraperResult) extends Scraper
 {
   val state: ScraperActivityState = Running
 }
 
-case class CompletedScraper() extends Scraper {
+final case class CompletedScraper() extends Scraper {
   val state: ScraperActivityState = Completed
 }
 
@@ -31,13 +31,13 @@ case object Pending extends ScraperActivityState
 case object Running extends ScraperActivityState
 case object Completed extends ScraperActivityState
 
-case class ScraperStateMachine(name: String,
-                               pending: PendingScraper,
-                               running: RunningScraper,
-                               completed: CompletedScraper,
-                               assertions: ScraperAssertion,
-                               lastRun: Long,
-                               current: Scraper)
+final case class ScraperStateMachine(name: String,
+                                     pending: PendingScraper,
+                                     running: RunningScraper,
+                                     completed: CompletedScraper,
+                                     assertions: ScraperAssertion,
+                                     lastRun: Long,
+                                     current: Scraper)
 {
 
   def toState(state: ScraperActivityState): ScraperStateMachine = {
@@ -74,7 +74,7 @@ object ScraperStateMachine {
 
 }
 
-case class ScraperTarget(scraper: ScraperStateMachine, url: URL) {
+final case class ScraperTarget(scraper: ScraperStateMachine, url: URL) {
 
   def toLedgerAdditionEntry: ScraperTargetAdditionEntry = {
     ScraperTargetAdditionEntry(new Date().getTime, ScraperTargetAttribute(scraper.name, url))
@@ -86,10 +86,10 @@ sealed trait ScraperResult {
   def toLedgerEntry: LedgerEntry
 }
 
-case class ScraperSuccess(url: URL,
-                          data: Option[Map[String, String]],
-                          targets: Vector[ScraperTarget],
-                          scraper: ScraperStateMachine) extends ScraperResult
+final case class ScraperSuccess(url: URL,
+                                data: Option[Map[String, String]],
+                                targets: Vector[ScraperTarget],
+                                scraper: ScraperStateMachine) extends ScraperResult
 {
 
   def toLedgerEntry: LedgerEntry = ScraperSuccessEntry(
@@ -102,9 +102,9 @@ case class ScraperSuccess(url: URL,
 
 }
 
-case class ScraperFailure(url: URL,
-                          scraper: ScraperStateMachine,
-                          reason: String) extends ScraperResult
+final case class ScraperFailure(url: URL,
+                                scraper: ScraperStateMachine,
+                                reason: String) extends ScraperResult
 {
   def toLedgerEntry: LedgerEntry = ScraperFailureEntry(
     timestamp = new Date().getTime,
@@ -113,9 +113,9 @@ case class ScraperFailure(url: URL,
   )
 }
 
-case class ScraperState(stateMachine: ScraperStateMachine,
-                        queue: Vector[URL] = Vector(),
-                        done:  Vector[URL] = Vector())
+final case class ScraperState(stateMachine: ScraperStateMachine,
+                              queue: Vector[URL] = Vector(),
+                              done:  Vector[URL] = Vector())
 {
 
   def addUrlToQueue(url: URL): ScraperState = {
@@ -153,7 +153,7 @@ case class ScraperState(stateMachine: ScraperStateMachine,
 
 }
 
-case class Scrapers(scrapers: Map[String, ScraperState] = HashMap()) {
+final case class Scrapers(scrapers: Map[String, ScraperState] = HashMap()) {
 
   def addTargetToQueue(t: ScraperTargetAttribute): Scrapers = {
     scrapers

@@ -1,8 +1,9 @@
 package com.plasmaconduit.jabba.scrapers.svbtle
 
-import java.util.Date
 import com.plasmaconduit.jabba._
-import com.plasmaconduit.jabba.browsers.dom._
+import com.plasmaconduit.jabba.browsers.dom.combinators._
+import com.plasmaconduit.jabba.scrapers.common.NodeScraper
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object SvbtleNode {
@@ -12,30 +13,17 @@ object SvbtleNode {
     pending = PendingScraper(),
     running = RunningScraper(
       sleep  = 15.seconds,
-      scrape = scrape
+      scrape = NodeScraper(
+        TextScraper("title", CssSelectorNodes(".article_title a")),
+        AttributeScraper("date", "datetime", CssSelectorNodes(".article_time")),
+        OptionalScraper(MetaContentScraper("twitter_author", CssSelectorNodes("meta[property='twitter:creator']"))),
+        TimedScraper()
+      )
     ),
     completed = CompletedScraper(),
     assertions = MustContainData
   )
 
   def apply(): ScraperStateMachine = machine
-
-  def scrape(machine: ScraperStateMachine, url: URL, document: DomRoot): ScraperResult = {
-    val data = scrapeDataFromArticle(document)
-    ScraperSuccess(url, data, Vector(), machine)
-  }
-
-  def scrapeDataFromArticle(document: DomRoot): Option[Map[String, String]] = for (
-    title         <- document.querySelector(".article_title a").map(_.getText);
-    timeTag       <- document.querySelector(".article_time");
-    time          <- timeTag.getAttribute("datetime");
-    twitterTag    <- document.querySelector("meta[property='twitter:creator']");
-    twitterAuthor <- twitterTag.getAttribute("content").filter(_.length > 1).orElse(Some(""))
-  ) yield Map(
-      "title"          -> title,
-      "date"           -> time,
-      "twitter_author" -> twitterAuthor,
-      "scraped_time"   -> new Date().getTime.toString
-    )
 
 }

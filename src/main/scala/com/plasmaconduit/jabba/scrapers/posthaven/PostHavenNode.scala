@@ -1,8 +1,9 @@
 package com.plasmaconduit.jabba.scrapers.posthaven
 
-import java.util.Date
 import com.plasmaconduit.jabba._
-import com.plasmaconduit.jabba.browsers.dom._
+import com.plasmaconduit.jabba.browsers.dom.combinators._
+import com.plasmaconduit.jabba.scrapers.common.NodeScraper
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object PostHavenNode {
@@ -12,47 +13,20 @@ object PostHavenNode {
     pending = PendingScraper(),
     running = RunningScraper(
       sleep  = 15.seconds,
-      scrape = scrape
+      scrape = NodeScraper(
+        MetaContentScraper("title", CssSelectorNodes("meta[property='og:title']")),
+        MetaContentScraper("description", CssSelectorNodes("meta[property='og:description']")),
+        AttributeScraper("date", "data-posthaven-date-utc-iso8601", CssSelectorNodes(".actual-date")),
+        OptionalScraper(AttributeScraper("ph_author", "href", CssSelectorNodes(".author a"))),
+        OptionalScraper(TextScraper("display_author", CssSelectorNodes(".author a"))),
+        OptionalScraper((m, u, d) => Some(Map("publisher" -> u.toBase))),
+        TimedScraper()
+      )
     ),
     completed = CompletedScraper(),
     assertions = MustContainData
   )
 
   def apply(): ScraperStateMachine = machine
-
-  def scrape(machine: ScraperStateMachine, url: URL, document: DomRoot): ScraperResult = {
-    val data = scrapeAuthorFromArticle(url, scrapeDataFromArticle(url, document), document)
-    ScraperSuccess(url, data, Vector(), machine)
-  }
-
-  def scrapeDataFromArticle(url: URL, document: DomRoot): Option[Map[String, String]] = for (
-    titleTag       <- document.querySelector("meta[property='og:title']");
-    title          <- titleTag.getAttribute("content");
-    descriptionTag <- document.querySelector("meta[property='og:description']");
-    description    <- descriptionTag.getAttribute("content");
-    dateTag        <- document.querySelector(".actual-date");
-    date           <- dateTag.getAttribute("data-posthaven-date-utc-iso8601")
-  ) yield Map(
-    "title"        -> title,
-    "description"  -> description,
-    "date"         -> date,
-    "scraped_time" -> new Date().getTime.toString
-  )
-
-  def scrapeAuthorFromArticle(url: URL,
-                              data: Option[Map[String, String]],
-                              document: DomRoot): Option[Map[String, String]] =
-  {
-    val appended = for (
-      map       <- data;
-      authorTag <- document.querySelector(".author a");
-      ph_author <- authorTag.getAttribute("href")
-    ) yield map + (
-      "ph_author"      -> ph_author,
-      "display_author" -> authorTag.getText,
-      "publisher"      -> url.toBase
-    )
-    appended.orElse(data)
-  }
 
 }

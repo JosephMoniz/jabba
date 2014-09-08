@@ -2,7 +2,11 @@ package com.plasmaconduit.jabba
 
 import scala.util.parsing.combinator._
 
-case class URL(protocol: String, host: String, port: Option[Int], relative: RelativeURL) {
+final case class URL(protocol: String,
+                     host: String,
+                     port: Option[Int],
+                     relative: RelativeURL)
+{
 
   override def toString: String = {
     s"$protocol://$host${port.map(":" + _.toString).getOrElse("")}$toRequestPath"
@@ -17,7 +21,7 @@ case class URL(protocol: String, host: String, port: Option[Int], relative: Rela
   }
 }
 
-case class RelativeURL(path: String, query: Option[String]) {
+final case class RelativeURL(path: String, query: Option[String]) {
 
   override def toString: String = {
     s"$path${query.map("?" + _).getOrElse("")}"
@@ -27,13 +31,19 @@ case class RelativeURL(path: String, query: Option[String]) {
 
 object URL extends RegexParsers {
 
-  val protocol: Parser[String] = opt("[^:]+".r <~ "://") ^^ { _.getOrElse("http").toLowerCase }
+  val protocol: Parser[String] = opt("[^:]+".r <~ "://") ^^ {
+    _.getOrElse("http").toLowerCase
+  }
 
   val host: Parser[String] = "[^:\\/]+".r
 
-  val port: Parser[Option[Int]] = opt(":" ~> "[0-9]+".r) ^^ { _.map(_.toInt) }
+  val port: Parser[Option[Int]] = opt(":" ~> "[0-9]+".r) ^^ {
+    _.map(_.toInt)
+  }
 
-  val path: Parser[String] = opt("/[^?]*".r) ^^ { _.getOrElse("/") }
+  val path: Parser[String] = opt("/[^?]*".r) ^^ {
+    _.getOrElse("/")
+  }
 
   val query: Parser[Option[String]] = opt("?" ~> ".+".r)
 
@@ -72,6 +82,10 @@ object URL extends RegexParsers {
 object URLs {
 
   def apply(urls: String*): Vector[URL] = {
+    urls.flatMap(n => URL.parseFull(n).toVector).toVector
+  }
+
+  def apply(urls: Vector[String]): Vector[URL] = {
     urls.flatMap(n => URL.parseFull(n).toVector).toVector
   }
 

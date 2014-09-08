@@ -3,7 +3,7 @@ package com.plasmaconduit.jabba.scrapers.pando
 import com.plasmaconduit.jabba._
 import com.plasmaconduit.jabba.browsers.dom._
 import com.plasmaconduit.jabba.scrapers.common._
-import com.plasmaconduit.jabba.scrapers.common.combinators.{LastNode, CssSelectorNodes, DatedLinks}
+import com.plasmaconduit.jabba.browsers.dom.combinators.{LastNode, CssSelectorNodes, DatedLinks}
 import scala.concurrent.duration._
 
 object PandoFeed {

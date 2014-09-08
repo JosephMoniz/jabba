@@ -1,4 +1,4 @@
-package com.plasmaconduit.jabba.scrapers.common.combinators
+package com.plasmaconduit.jabba.browsers.dom.combinators
 
 import com.plasmaconduit.jabba.URL
 import com.plasmaconduit.jabba.browsers.dom._

@@ -1,8 +1,9 @@
 package com.plasmaconduit.jabba.scrapers.infoq.presentations
 
-import java.util.Date
 import com.plasmaconduit.jabba._
-import com.plasmaconduit.jabba.browsers.dom._
+import com.plasmaconduit.jabba.browsers.dom.combinators._
+import com.plasmaconduit.jabba.scrapers.common._
+import com.plasmaconduit.jabba.scrapers.common.combinators._
 import scala.concurrent.duration._
 
 object InfoQPresentationNode {
@@ -16,51 +17,24 @@ object InfoQPresentationNode {
     pending = PendingScraper(),
     running = RunningScraper(
       sleep  = 15.seconds,
-      scrape = scrape
+      scrape = NodeScraper(
+        TextScraper("title", FirstNode(CssSelectorNodes("h1.general div"))),
+        AttributeScraper("infoq_author", "href", CssSelectorNodes(".author_general a.editorlink")),
+        TextScraper("display_author", CssSelectorNodes(".author_general a.editorlink")),
+        MetaContentScraper("image", CssSelectorNodes("meta[property='og:image']")),
+        RegexFilterScraper(dateRegex, TextScraper("date", CssSelectorNodes(".author_general"))),
+        OptionalScraper(AttributeScraper("recorded_at", "href", CssSelectorNodes("h1.general .recorded a"))),
+        RegexFilterScraper(summaryRegex, TextScraper("summary", CssSelectorNodes("#summary"))),
+        TextScraper("author_bio", CssSelectorNodes("#biotext")),
+        OptionalScraper(TextScraper("event_description", CssSelectorNodes("#conference"))),
+        FixedScraper("publisher", "http://infoq.com/"),
+        TimedScraper()
+      )
     ),
     completed  = CompletedScraper(),
     assertions = MustContainData
   )
 
   def apply(): ScraperStateMachine = machine
-
-  def scrape(machine: ScraperStateMachine, url: URL, page: DomRoot): ScraperResult = {
-    val data = scrapeDataFromArticle(page)
-    ScraperSuccess(url, data, Vector(), machine)
-  }
-
-  def scrapeDataFromArticle(page: DomRoot): Option[Map[String, String]] = for(
-    title            <- page.querySelectorAll("h1.general div").headOption.map(_.getText);
-    authorTag        <- page.querySelector(".author_general a.editorlink");
-    infoqAuthor      <- authorTag.getAttribute("href");
-    displayAuthor    <- Some(authorTag.getText);
-    imageTag         <- page.querySelector("meta[property='og:image']");
-    image            <- imageTag.getAttribute("content");
-    date             <- page.querySelector(".author_general").map(_.getText).map(cleanUpPublishDate);
-    recordedAt       <- page.querySelector("h1.general .recorded a").flatMap(_.getAttribute("href")).orElse(Some(""));
-    summary          <- page.querySelector("#summary").map(_.getText).map(cleanUpSummary);
-    authorBio        <- page.querySelector("#biotext").map(_.getText);
-    eventDescription <- page.querySelector("#conference").map(_.getText).orElse(Some(""))
-  ) yield Map(
-    "title"             -> title,
-    "infoq_author"      -> infoqAuthor,
-    "display_author"    -> displayAuthor,
-    "image"             -> image,
-    "publish_date"      -> date.getOrElse(""),
-    "recorded_at"       -> recordedAt,
-    "summary"           -> summary.getOrElse(""),
-    "author_bio"        -> authorBio,
-    "event_description" -> eventDescription,
-    "scraped_time"      -> new Date().getTime.toString,
-    "publisher"         -> "http://infoq.com/"
-  )
-
-  def cleanUpPublishDate(string: String): Option[String] = {
-    dateRegex findFirstIn string map { case dateRegex(date) => date }
-  }
-
-  def cleanUpSummary(string: String): Option[String] = {
-    summaryRegex findFirstIn string map { case summaryRegex(summary) => summary }
-  }
 
 }

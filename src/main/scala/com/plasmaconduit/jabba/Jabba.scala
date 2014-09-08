@@ -4,9 +4,9 @@ import rx.lang.scala._
 import scala.collection.immutable._
 import scala.concurrent.duration._
 
-case class Jabba(transactor: Transactor,
-                 initialLedger: Ledger,
-                 initialScrapers: Scrapers)
+final case class Jabba(transactor: Transactor,
+                       initialLedger: Ledger,
+                       initialScrapers: Scrapers)
 {
 
   def scrape(): Unit = {
@@ -74,4 +74,4 @@ object Jabba {
 
 }
 
-case class ScraperStateUpdate(ledger: Ledger, scrapers: Scrapers)
+final case class ScraperStateUpdate(ledger: Ledger, scrapers: Scrapers)
